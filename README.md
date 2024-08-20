@@ -24,6 +24,8 @@ Algorithm:
 - parser function takes as an argument the URL.
 - parser function checks the string and marks each match as 1, and a mismatch as 0. And checks ones and zeros in the Map structure. If they match, it returns the routing template, if not, it returns string 404.
 
+[ **👉 To run tests from the repository, use: node --test** ]
+
 E.g.
 
 ```

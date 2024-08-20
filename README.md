@@ -13,6 +13,8 @@ If you add at least one letter, the check will take ~40 seconds.
 /^(a+)+$/.test(`${'a'.repeat(32)}!`)
 ```
 
+> ✅ _The Async-Routing-without-RegEx partially executes logic in microtasks and partially in macrotask queue (setImmediate). This allows to give a quantum of time to other stages of the event loop._
+
 ## How routing works without regular expressions.
 
 Algorithm:
@@ -29,7 +31,7 @@ import { addPaths, parser } from "./routing.js";
 
 const routers = {
   "/user/*": () => 1,
-  "user/*/edit": () => 2,
+  "user/*/edit/*": () => 2,
   "/about": () => 3,
   "404": () => 404
 }
@@ -39,21 +41,29 @@ var parsing = parser(urls);
 
 {
     let url = "user/john";
-    parsing(url); // "/user/*"
+    var [route, args] = await parsing(url);
+    var {0: username } = args;
+    console.log(route) // "/user/*"
+    console.log(username) // john
 }
 
 {
-    let url = "user/john/edit";
-    parsing(url); // "user/*/edit"
+    let url = "user/john/edit/5";
+    var [route, args] = await parsing(url);
+    var {0: username, 1: post } = args;
+    console.log(route) // "user/*/edit/*"
+    console.log(username, post) // john, 5
 }
 
 {
     let url = "about";
-    parsing(url); // "/about"
+    var [route] = await parsing(url);
+    console.log(route) // "/about"
 }
 
 {
     let url = "something";
-    parsing(url); // "404"
+    var [route] = await parsing(url);
+    console.log(route) // "404"
 }
 ```

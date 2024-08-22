@@ -1,9 +1,9 @@
-import { setImmediate as setImmediatePromise } from 'node:timers/promises';
+import { setImmediate as setImmediatePromise } from "node:timers/promises";
 
 /**
- * 
- * @param {Map} urls 
- * @param {string} url 
+ *
+ * @param {Map} urls
+ * @param {string} url
  * @returns {void}
  */
 var addUrl = (urls, url) => {
@@ -23,12 +23,12 @@ var addUrl = (urls, url) => {
     if (u.length === 1) {
       urls.set(`${first}`, {
         paths: [[[first], "1"]],
-        routers: [first]
+        routers: [first],
       });
     } else {
       urls.set(`${first}`, {
         paths: [[...arr, sumWithInitial]],
-        routers: [url]
+        routers: [url],
       });
     }
   } else {
@@ -47,8 +47,8 @@ var addUrl = (urls, url) => {
   }
 };
 /**
- * 
- * @param {Object} routers 
+ *
+ * @param {Object} routers
  * @returns {Map}
  */
 var addPaths = (routers) => {
@@ -58,10 +58,10 @@ var addPaths = (routers) => {
   return urls;
 };
 /**
- * 
- * @param {Map} urls 
- * @param {string} first 
- * @param {[string]} u 
+ *
+ * @param {Map} urls
+ * @param {string} first
+ * @param {[string]} u
  * @returns {[string,[string]]}
  */
 var checker = (urls, first, u) => {
@@ -74,7 +74,7 @@ var checker = (urls, first, u) => {
     var { 0: path, 1: numbers } = paths[k];
     if (u.length === path.length) {
       for (let k1 = 0; k1 < u.length; k1++) {
-        match += u[k1] === path[k1] ? "1" : (args.push(u[k1]), "0"); 
+        match += u[k1] === path[k1] ? "1" : (args.push(u[k1]), "0");
       }
     }
     if (match === numbers) {
@@ -88,28 +88,37 @@ var checker = (urls, first, u) => {
   return [result, args];
 };
 /**
- * 
- * @param {Map} urls 
+ *
+ * @param {Map} urls
  * @param {string} url
  * @returns {Promise<[string,[string]]>}
  */
 var parser = (urls) => (url) => {
   return new Promise((resolve, reject) => {
-    
     if (url === "/") return resolve(["/"]);
 
     var u = url.split("/");
     u = u.filter((v) => v.trim().replace("/", "") !== "");
     var first = `${u[0]}`;
 
-    if (!urls.has(first) && !urls.has("*")) resolve(["404"]); 
-    
+    if (!urls.has(first) && !urls.has("*")) resolve(["404"]);
+
     if (urls.has(first)) {
-      return setImmediatePromise(checker(urls, first, u)).then(resolve);
-      //return Promise.resolve(checker(urls, first, u));
+      let immediate = setImmediatePromise(checker(urls, first, u));
+      return immediate.then(
+        (res) => (
+          clearImmediate(immediate), (immediate = undefined), resolve(res)
+        )
+      );
+      //return setImmediatePromise(checker(urls, first, u)).then(resolve);
     } else {
-      return setImmediatePromise(checker(urls, "*", u)).then(resolve);
-      //return Promise.resolve(checker(urls, "*", u));
+      let immediate = setImmediatePromise(checker(urls, "*", u));
+      return immediate.then(
+        (res) => (
+          clearImmediate(immediate), (immediate = undefined), resolve(res)
+        )
+      );
+      //return setImmediatePromise(checker(urls, "*", u)).then(resolve);
     }
   });
 };

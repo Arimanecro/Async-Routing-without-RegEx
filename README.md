@@ -35,37 +35,46 @@ const routers = {
   "/user/*": () => 1,
   "user/*/edit/*": () => 2,
   "/about": () => 3,
-  "404": () => 404
-}
+  404: () => 404,
+};
 
 var urls = addPaths(routers);
 var parsing = parser(urls);
 
 {
+  (async () => {
     let url = "user/john";
     var [route, args] = await parsing(url);
-    var {0: username } = args;
-    console.log(route) // "/user/*"
-    console.log(username) // john
+    var { 0: username } = args;
+    console.log(route); // "/user/*"
+    console.log(username); // john
+  })();
 }
 
 {
+  (async () => {
     let url = "user/john/edit/5";
     var [route, args] = await parsing(url);
-    var {0: username, 1: post } = args;
-    console.log(route) // "user/*/edit/*"
-    console.log(username, post) // john, 5
+    var { 0: username, 1: post } = args;
+    console.log(route); // "user/*/edit/*"
+    console.log(username, post); // john, 5
+  })();
 }
 
 {
+  (async () => {
     let url = "about";
     var [route] = await parsing(url);
-    console.log(route) // "/about"
+    console.log(route); // "/about"
+  })();
 }
 
 {
+  (async () => {
     let url = "something";
     var [route] = await parsing(url);
-    console.log(route) // "404"
+    console.log(route); // "404"
+  })();
 }
+
 ```

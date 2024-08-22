@@ -13,7 +13,7 @@ If you add at least one letter, the check will take ~40 seconds.
 /^(a+)+$/.test(`${'a'.repeat(32)}!`)
 ```
 
-> ✅ _The Async-Routing-without-RegEx partially executes logic in microtasks and partially in macrotask queue (setImmediate). This allows to give a quantum of time to other stages of the event loop._
+> ✅ _The Async-Routing-without-RegEx partially executes logic in microtasks and partially in macrotask queue (setImmediate). This allows to give a quantum of time to other stages of the event loop and does not create a blocking queue of microtasks_
 
 ## How routing works without regular expressions.
 
